@@ -6,10 +6,11 @@ const increaseIdSpecificity = ({ repeat }={ repeat: 3 }) => ({
     if (!sheet.id) {
       sheet.id = component + '-' + createHash(component);
     }
-    console.log(sheet.id)
+    console.log(sheet);
 
+    console.log(sheet.rules.index);
     sheet.rules.index.forEach(rule => {
-      rule.selectorText = '#' + sheet.id + rule.selectorText;
+      rule.selector = '#' + sheet.id + rule.selector;
     })
   }
 });
