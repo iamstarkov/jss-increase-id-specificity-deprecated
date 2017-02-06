@@ -8,13 +8,10 @@ const increaseIdSpecificity = ({ repeat }={ repeat: 3 }) => ({
     }
     console.log(sheet.id)
 
-    Object.keys(sheet.classes).forEach(k => {
-      const v = sheet.classes[k];
-      // sheet.classes[k] = sheet.id.repeat(repeat) + v;
+    sheet.rules.index.forEach(rule => {
+      rule.selectorText = '#' + sheet.id + rule.selectorText;
     })
-
-    console.log(sheet);
   }
-})
+});
 
 module.exports = increaseIdSpecificity;
