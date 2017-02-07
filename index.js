@@ -1,31 +1,18 @@
-const createHash = require('murmurhash-js/murmurhash3_gc');
+/**
+ * use :not(#\20), :not(.\20) and :not(\20) instead of generating unlikely
+ * appearing ids…
+ * — https://twitter.com/subzey/status/829050478721896448
+ * Rationale: \20 is a css escape for U+0020 Space, and neither classname,
+ * nor id, nor tagname can contain a space
+ * — https://twitter.com/subzey/status/829051085885153280
+ */
 
-const increaseIdSpecificity = ({ repeat }={ repeat: 3 }) => ({
-  onProcessSheet(sheet) {
-    const component = sheet && sheet.options.meta;
-
-    if (!sheet.id) {
-      sheet.id = component + '-' + createHash(sheet.toString());
+module.exports = function increaseIdSpecificity({ repeat }={ repeat: 3 }) {
+  return {
+    onProcessSheet(sheet) {
+      sheet.rules.index.forEach(rule => {
+        rule.selectorText += ':not(#\\20)'.repeat(repeat);
+      })
     }
-
-    const rootNode = rule => rule.originalStyle.rootNode;
-    const hasRootNode = rule => typeof rootNode(rule) === 'boolean';
-
-    const prefix = ('#' + sheet.id).repeat(repeat);
-    const glue = rule => rootNode(rule) ? '' : ' '
-
-    const cleanup = rule => {
-      rule.originalStyle.rootNode = null;
-      rule.style['root-node'] = null;
-    }
-
-    sheet.rules.index
-      .filter(hasRootNode)
-      .forEach(rule => {
-        rule.selector = prefix + glue(rule) + rule.selector;
-        cleanup(rule);
-      });
   }
-});
-
-module.exports = increaseIdSpecificity;
+}
