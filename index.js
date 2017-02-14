@@ -11,12 +11,7 @@ module.exports = function increaseIdSpecificity({ repeat }={ repeat: 3 }) {
   return {
     onProcessSheet(sheet) {
       sheet.rules.index.forEach(rule => {
-        const [ selector, pseudoelem ] = ("" + rule.selectorText).split('::');
-        rule.selectorText = selector;
-        rule.selectorText += ':not(#\\20)'.repeat(repeat);
-        if (pseudoelem) {
-          rule.selectorText += '::' + pseudoelem;
-        }
+        rule.selectorText = ':not(#\\20)'.repeat(repeat) + rule.selectorText;
       })
     }
   }
