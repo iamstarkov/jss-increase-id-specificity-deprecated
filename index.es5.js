@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * use :not(#\20), :not(.\20) and :not(\20) instead of generating unlikely
  * appearing ids…
@@ -7,16 +9,19 @@
  * — https://twitter.com/subzey/status/829051085885153280
  */
 
-module.exports = function increaseIdSpecificity({ repeat }={ repeat: 3 }) {
-  let prefix = '';
-  for (let i = 0; i < repeat; i++) {
+module.exports = function increaseIdSpecificity() {
+  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { repeat: 3 },
+      repeat = _ref.repeat;
+
+  var prefix = '';
+  for (var i = 0; i < repeat; i++) {
     prefix += ':not(#\\20)';
   }
   return {
-    onProcessSheet(sheet) {
-      sheet.rules.index.forEach(rule => {
+    onProcessSheet: function onProcessSheet(sheet) {
+      sheet.rules.index.forEach(function (rule) {
         rule.selectorText = prefix + rule.selectorText;
-      })
+      });
     }
-  }
-}
+  };
+};
