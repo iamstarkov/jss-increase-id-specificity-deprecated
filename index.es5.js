@@ -9,19 +9,22 @@
  * — https://twitter.com/subzey/status/829051085885153280
  */
 
+var selector = ':not(#\\20)';
+
 module.exports = function increaseIdSpecificity() {
   var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { repeat: 3 },
       repeat = _ref.repeat;
 
-  var prefix = '';
-  for (var i = 0; i < repeat; i++) {
-    prefix += ':not(#\\20)';
-  }
-  return {
-    onProcessSheet: function onProcessSheet(sheet) {
-      sheet.rules.index.forEach(function (rule) {
-        rule.selectorText = prefix + rule.selectorText;
-      });
-    }
+  var prefix = Array(repeat + 1).join(selector);
+  var onProcessSheet = function onProcessSheet(sheet) {
+    sheet.rules.index.forEach(function (rule) {
+      if (rule.type === 'conditional') {
+        return onProcessSheet(rule);
+      }
+
+      rule.selectorText = prefix + rule.selectorText;
+    });
   };
+
+  return { onProcessSheet: onProcessSheet };
 };
