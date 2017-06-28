@@ -7,16 +7,19 @@
  * — https://twitter.com/subzey/status/829051085885153280
  */
 
+const selector = ':not(#\\20)';
+
 module.exports = function increaseIdSpecificity({ repeat }={ repeat: 3 }) {
-  let prefix = '';
-  for (let i = 0; i < repeat; i++) {
-    prefix += ':not(#\\20)';
-  }
-  return {
-    onProcessSheet(sheet) {
-      sheet.rules.index.forEach(rule => {
-        rule.selectorText = prefix + rule.selectorText;
-      })
-    }
-  }
+  const prefix = Array(repeat + 1).join(selector);
+  const onProcessSheet = (sheet) => {
+    sheet.rules.index.forEach(rule => {
+      if (rule.type === 'conditional') {
+        return onProcessSheet(rule);
+      }
+
+      rule.selectorText = prefix + rule.selectorText;
+    });
+  };
+
+  return { onProcessSheet };
 }
